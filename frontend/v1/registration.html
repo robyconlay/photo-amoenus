@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="script.js"></script>
+<link rel="stylesheet" type="text/css" href="stylesheet.css">
+</head>
+<body>
+  <div class="header">
+    <h1 class="titles"> Registrati</h1>
+    <p style="margin-left: 10px; width: 40%; display: inline-block;">Compila il modulo per registrarti.</p>
+</div>
+<div class="header-center">
+    <a href="index.html">
+    <img src="logo.png" >
+    </a>
+    
+</div>
+
+    <label><b>Email:</b></label>
+    <input type="text" name="email" id="regEmail"  required>
+
+    <label><b>Password:</b></label>
+    <input name="password" id="regPd" type="password" onkeyup='check();' required>
+    
+
+    <label><b>Confirm Password:</b></label>
+    <input name="password2" id="regPdConf" type="password" onkeyup='check();' required>
+    <label id="message"></label>
+    <hr>
+    
+
+    <button class =registerbtn type="button" onclick="registration()">Sign up</button>
+  </div>
+  
+  <div class="container signin">
+    <p>Hai gia' un account?? <a href="login.html">Log in</a>.</p>
+  </div>
+</form>
+
+<script>
+    var check = function() {
+        if ( document.getElementById("regPd").value == document.getElementById("regPdConf").value) {
+          document.getElementById('message').style.color = 'green';
+          document.getElementById('message').innerHTML = 'matching';
+        } else {
+          document.getElementById('message').style.color = 'red';
+          document.getElementById('message').innerHTML = 'not matching';
+        }
+      }
+</script>
+
+</body>
+</html>

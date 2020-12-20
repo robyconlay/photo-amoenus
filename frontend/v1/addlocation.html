@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Aggiungi una location</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="script.js"></script>      
+        <link rel="stylesheet" type="text/css" href="stylesheet.css">      
+
+    </head>
+    <body>
+        <div class="header">
+            <h1 class="titles"> Aggiungi un luogo</h1>
+            <p style="margin-left: 10px; width: 40%; display: inline-block;">Compila il modulo per aggiungere il tuo luogo</p>
+        </div>
+        <div class="header-center">
+            <a href="index.html">
+                <img src="logo.png" >
+                </a>
+            
+        </div>
+        
+        <hr>
+        
+        <div class="container" id="center">
+            
+        <img src="https://www.informagiovani-italia.com/images/mappa_trento.jpg" style="max-width: 400px">
+            
+        </div>
+
+
+        <form>
+            
+            <br><br><br>
+            <div>
+                <label for="nome"><br>Inserisci nome del luogo</br></label>
+                <input type="text" id="nome" ></br> 
+                <label for="posizione"><br>Inserisci la posizione</br></label>
+                <input type="text" id="posizione"><br>
+
+                <label for="città"> <br> Inserisci la città</br></label>
+                <input type="text" id="città"><br>
+                
+                <label for="descrizione">Inserisci una breve descrizione del luogo</label>
+                <textarea  class= "description"  id="descrizione"></textarea><br>
+
+                <div class="custom-select" style="width: 200px;">
+                <label for="categoria"><br>Inserisci la categoria:</br></label>
+                <select class= "dropdownMenu" name="categoria" id="categoria">
+                    <option value="" selected>Seleziona</option> 
+                    <option value="Paesaggio">Paesaggio</option>
+                    <option value="Urbano">Urbano</option>
+                    <option value="Monumento">Monumento</option>
+                    <option value="Lago">Lago</option>
+                    <option value="Mare">Mare</option>
+                    <option value="Montagna">Montagna</option>
+                </select>
+                </div>
+                <br><br>
+                <label for="ragg"><br>Raggiungibilità:</br></label> 
+                <div class="multiselect" id="">
+                    <label><input type="checkbox" id="ragg[0]" value="Piedi" />Piedi</label>
+                    <label><input type="checkbox" id="ragg[1]" value="Bicicletta" />Bicicletta</label>
+                    <label><input type="checkbox" id="ragg[2]" value="Macchina" />Macchina</label>
+                    <label><input type="checkbox" id="ragg[3]" value="Mezzi pubblici" />Mezzi pubblici</label>
+                </div>
+                <br><br><br>
+            </div>
+            <div>
+                
+                <p>Inserire un immagine:</p>
+                <input  type="file" id="myFile" onchange="myFunction()" required>
+                <p id="demo"  id="immagine"></p><br><br>
+                
+
+                <label for="photoDescription"><br>Inserisci una breve descrizione della macchina fotografica utilizzata o del supporto,
+                                        aggiungendo dettagli a piacere
+                </label>
+                <textarea style="height: 200px; width: 600px; margin: 10px" id="photoDescription"></textarea><br>
+                
+                <label for="orario" style="margin-right: 60px"><br>Inserisci l'orario di scatto</br></label>
+                <input type="time" style="height: 20px;" id="orario"><br>
+                                
+                <label for="data"></label><br>Data dello scatto</br></label>
+                <input type="date" style="width: 150px; height: 20px; margin-bottom: 20px;" id="data"><br>
+            </div>
+            
+            <div class="container">
+                <button class="registerbtn" type="button" value="Aggiungi!" onclick="addLocation()" >Aggiungi!</button>
+            </div>
+
+        </form>
+    </body>
+</html>

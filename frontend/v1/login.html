@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="script.js"></script>
+</head>
+<link rel="stylesheet" type="text/css" href="stylesheet.css">
+<body>
+    <div class="header">
+        <h1 class="titles"> Accedi</h1>
+        <p style="margin-left: 10px; width: 40%; display: inline-block;">Inserisci email e password per accedere.</p>
+    </div>
+    <div class="header-center">
+        <a href="index.html">
+        <img src="logo.png" >
+        </a>
+        
+    </div>
+    <form action="user/login" method="post" name="loginform" id="loginform">
+        <p>Email:</p>
+        <input name="email" id="loginEmail" type="text" value="">
+        <p>Password:</p>
+        <input name="pwd" id="loginPd" type="password" value="">
+        <button class="registerbtn"type="button" onclick="login()">Accedi</button>
+    </form>
+
+
+
+</body>
+
+</html>

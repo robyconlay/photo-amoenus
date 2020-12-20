@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <link rel="stylesheet" type="text/css" href="stylesheet.css">
+        <script src="script.js">
+        </script>
+
+        <style>
+            h2 {
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body onload="loadLocation(window.location.href)">
+        <div class="header">
+            <h1 class="titles" id="name"></h1>
+        </div>
+        <div class="header-center">
+            <a href="index.html">
+            <img src="logo.png" >
+            </a>
+            <button class="locationbtn"onclick="window.location.href='searchlocation.html';">Torna alle location</button>
+            
+        </div>
+        <p>Posizione:</p>
+        <div class="locationData" id="address"></div>
+        <p>Citta':</p>
+        <div class="locationData" id="city"></div>
+        <p>Descrizione:</p>
+        <div class="locationData" id="description"></div>
+        <p>Categoria:</p>
+        <div class="locationData" id="category"></div>
+        <p>Raggiungibilita'</p>
+        <div class="locationData" id="raggiungibilita"></div>
+        <hr><br>
+        <div style="text-align: center;" id="locationImage"></div>
+        <br><hr>
+        <p>Descrizione: </p>
+        <div class="locationData" id="photoDesc"></div>
+        <p>Orario:</p>
+        <div class="locationData" id="hour"></div>
+        <p>Data:</p>
+        <div class="locationData" id="date"></div>
+        <br><hr>
+
+        <div class="titles" style="width: 100%;"><span id="likes"></span> persone pensano che questo elemento sia stato utile</div>
+        <div id="favourite"></div>
+
+        <button class="registerbtn" id="likeButton" onclick="upvote(window.location.href)" type="button">Mi è stato utile</button><br>
+        
+        <button class="registerbtn" type="button" onclick="Popup(window.location.href)">Report</button>
+
+    </body>
+</html>

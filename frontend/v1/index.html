@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="script.js"></script>
+  <link rel="stylesheet" type="text/css" href="stylesheet.css">
+</head>
+
+<body onload="loadButtons()">
+  <div class="header">
+    <h1 class="titles"> Photo Amenous</h1>
+    <p style="margin-left: 10px; width: 40%; display: inline-block;">Benvenuto nella homepage.</p>
+</div>
+<div class="header-center">
+    <a href="index.html">
+    <img src="logo.png" >
+    </a>
+  </div>
+  <div class="containerhp" style="margin-top: 100px;">
+  <form action="searchlocation.html">
+    <button class="homepagebtnr" type="submit">SEARCH</button>
+  </form>
+  <form action="addlocation.html">
+    <button class="homepagebtnr" type="submit" id= "addLocButton" style="display: none;">ADD LOCATION</button> 
+  </form>
+  <form action="favourites.html">
+    <button class="homepagebtnr" id = "prefButton" type="submit" style="display: none;">PREFERITI</button>
+  </form>
+  
+  </div>
+
+  <div class="containerhp" style="margin-top: 100px; float: right;">
+    <form action="login.html">
+      <button class="homepagebtnl" type="submit" id = "logButton" style="display: block;">LOGIN</button> 
+    </form>
+  <button class="homepagebtnl" type="submit" id = "logoutButton" style="display: none;" onclick="Logout()" >LOGOUT</button> 
+  <form action="registration.html">
+    <button class="homepagebtnl"type="submit" id="regButton" style="display: block;">REGISTRATION</button> 
+  </form>
+</div>
+<div class="containerhp" style="margin-top: 100px; float: right;">
+  <form action="reportList.html">
+    <button  class="homepagebtnr"type="submit" id = "reportListButton" style="display: none;" >REPORT LIST</button>
+  </form>
+</div>
+</div>
+
+</body>
+
+</html>

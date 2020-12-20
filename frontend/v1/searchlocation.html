@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <script src="script.js"></script>
+        <script>
+            function start(){
+                findCity();
+                loadLocations();
+            }
+        </script>
+        <link rel="stylesheet" type="text/css" href="stylesheet.css">
+    </head>
+
+    <body style="text-align: left" onload="start()">
+        <div class="header">
+            <h1 class="titles"> Luoghi disponibili</h1>
+        </div>
+        <div class="header-center">
+            <a href="index.html">
+            <img src="logo.png" >
+            </a>
+            
+        </div>
+        
+        <div class="container"> 
+            <label for="filtri">Filtri:</label>
+            
+            <select class="dropdownMenu"name="citta" id="citta" onchange="loadLocations()">
+                <option value=null selected>Seleziona Città</option>
+            </select>
+
+            <select class="dropdownMenu" name="categoria" id="categoria" onchange="loadLocations()">
+                <option value=null selected>Seleziona Categoria</option>
+                <option value="Paesaggio">Paesaggio</option>
+                <option value="Urbano">Urbano</option>
+                <option value="Monumento">Monumento</option>
+                <option value="Lago">Lago</option>
+                <option value="Mare">Mare</option>
+                <option value="Montagna">Montagna</option>
+            </select>
+
+            <select  class="dropdownMenu"name="raggiung" id="raggiung" onchange="loadLocations()">
+                <option value=null selected>Seleziona Raggiungibilità</option>
+                <option value="Piedi">Piedi</option>
+                <option value="Bicicletta">Bicicletta</option>
+                <option value="Macchina">Macchina</option>
+                <option value="Mezzi pubblici">Mezzi pubblici</option>
+            </select>
+        </div>
+        <br>
+        <div>
+            <label for="ordine" style="text-align: center">Ordine:</label>
+            <select class="dropdownMenu" name="ordine" id="ordine" onchange="loadLocations()">
+                <option value=null selected>Inserimento</option>
+                <option value="name">A-Z</option>
+                <option value="-name">Z-A</option>
+                <option value="-date">Più Recente</option>
+                <option value="date">Più Vecchio</option>
+            </select>
+        </div>
+        <br><br>
+        <h2>Locations:</h2>
+        <div id="locations"></div>
+
+
+    </body>
+
+</html>

@@ -1,0 +1,215 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #C1D8CD;
+  }
+  
+  * {
+    box-sizing: border-box;
+  }
+  
+  /* Add padding to containers */
+  .container {
+    padding: 16px;
+    background-color: #C1D8CD;
+  }
+  
+  /* Full-width input fields */
+  input[type=text], input[type=password] {
+    width: 100%;
+    padding: 15px;
+    margin: 5px 0 22px 0;
+    display: inline-block;
+    border: none;
+    vertical-align: top;
+    background: #f1f1f1;
+  }
+  
+  
+  input[type=text]:focus, input[type=password]:focus {
+    background-color: #ddd;
+    outline: none;
+  }
+
+  textarea {
+    width: 100%;
+    height: 150px;
+    padding: 12px 20px;
+    background-color: #f1f1f1;
+    resize: none;
+  }
+  textarea:focus {
+    background-color: #ddd;
+    outline: none;
+  }
+  
+  .description{
+      width: 100%;
+      height: 150px;
+      padding: 15px;
+      margin: 5px 0 22px 0;
+      vertical-align: top;
+      border: none;
+      background: #f1f1f1;
+  }
+  
+  /* Overwrite default styles of hr */
+  hr {
+    border: 1px solid #f1f1f1;
+    margin-bottom: 25px;
+  }
+  
+  /* Set a style for the submit button */
+  .registerbtn {
+    background-color: #4CAF50;
+    color: black;
+    padding: 16px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    opacity: 0.9;
+  }
+  
+  .registerbtn:hover {
+    opacity: 1;
+  }
+  
+  /* Add a blue text color to links */
+  a {
+    color: dodgerblue;
+  }
+  
+  /* Set a grey background color and center the text of the "sign in" section */
+  .signin {
+    background-color: #f1f1f1;
+    text-align: center;
+  }
+  
+  .loc{
+    font-size: 26px;
+    padding: 20px;
+    border: black solid 1px;
+    background-color: #4CAF50;
+    margin: 2px;
+}
+  a:link{
+     color: black;
+    text-decoration: none;
+}
+  a:visited{
+    color: #C1D8CD;
+}
+
+.popup{
+    font-size: 25px;
+    text-align: center;
+    margin-top: 15%;
+    margin-bottom: 15%;
+}
+.popupLogin{
+    font-size: 30px;
+    text-align: center;
+    margin-top: 25%;
+    padding-bottom: 50%;
+}
+
+.titles{
+    font-size: 40px;
+    margin-right: 10px;
+    padding: 10px;
+    width:40%;
+}
+
+
+
+.dropdownMenu{
+  text-align: center;
+  -webkit-appearance: menulist-button;
+  height: 50px;
+  width: 220px;
+}
+
+.header{
+  float: left;
+  overflow: hidden;
+  box-sizing: border-box;
+  height: 250px;
+  width: 43%;
+  background-color:#cfe7d0 ;
+  margin-bottom: 20px;
+}
+
+#center{
+  text-align: center;
+}
+
+
+.header-center{
+  width: 57%;
+  float: left;
+  height: 250px;
+  display: inline-block;
+  background-color:#cfe7d0;
+  margin-bottom: 20px;
+
+}
+
+.locationData{
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 0;
+  display: inline-block;
+  border: none;
+  vertical-align: top;
+  background: #f1f1f1;
+}
+
+.locationbtn{
+  float :right; 
+  height: 100px;
+  width: 100px;
+  background-color: #4CAF50;
+  color: black;
+  padding: 16px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  opacity: 0.9;
+  margin-right: 8px;
+}
+
+.locationbtn:hover{
+  opacity: 1;
+}
+
+.homepagebtnr{
+  height: 200px;
+  width: 200px;
+  background-color: #4CAF50;
+  display: inline-block;
+  float: right;
+  font-size: 20px;
+}
+.homepagebtnr:hover{
+  opacity: 1;
+}
+
+.homepagebtnl:hover{
+  opacity: 1;
+}
+
+.homepagebtnl{
+  height: 200px;
+  width: 200px;
+  background-color: #4CAF50;
+  display: inline-block;
+  float: left;
+  font-size: 20px;
+}
+
+.containerhp{
+  margin-top: 100px;
+  display: inline-block;
+  width: 50%;
+  
+}

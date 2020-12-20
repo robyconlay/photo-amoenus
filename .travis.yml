@@ -1,0 +1,20 @@
+language: node_js
+node_js:
+  - 14
+
+sudo: true
+ 
+branches:
+  only:
+    - main
+ 
+deploy:
+  # deploy app as api server
+  - provider: heroku
+    skip_cleanup: true
+    api-key: $HEROKU_API_KEY
+    app: photo-amoenus-api
+    on:
+      branch: main
+
+#prova numero 100

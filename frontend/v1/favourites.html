@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" type="text/css" href="stylesheet.css">
+
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script src="script.js">
+    </script>
+    <script>
+        function loadFavourites() {
+            fetch('/lib/favourites/', {
+                headers: new Headers({
+                    'Content-Type': 'application/json',
+                    "Authorization": "Bearer " + getCookie('token')
+                })
+            })
+                .then(res => {
+                    if (res.status == 404) {
+                        document.getElementById("favourites").innerHTML = "Nessun preferito ancora aggiunto";
+                        return "";
+                    } else {
+                        return res.json();
+                    }
+                })
+                .then(data => {
+                    console.log(data);
+                    if (data == "")
+                        return;
+
+                    favElement = document.getElementById("favourites");
+                    favElement.innerHTML = "";
+
+                    fetch('../locations')
+                        .then(res => res.json())
+                        .then(locationsData => {
+                            locationsData.locations.map(location => {
+                                if (data.favourites.includes(location._id)) {
+                                    favElement.innerHTML += `<div class="container" id="location-${location._id}"><div class="loc"><a href="location.html?id=${location._id}">${location.name}</a></div><button type="button" onclick="removeFav('${location._id}')">Rimuovi dai preferiti</button></div>`;
+                                }
+                            })
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        });
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        }
+
+        function removeFav(id) {
+
+            fetch('/lib/favourites/remove/' + id, {
+                method: 'PATCH',
+                headers: new Headers({
+                    'Content-type': 'application/json',
+                    'Authorization': "Bearer " + getCookie("token")
+                })
+            })
+                .then(res => {
+                    if (res.ok) {
+                        document.getElementById('location-' + id).innerHTML = "";
+                    }
+
+                })
+                .catch(error => console.error(error));
+        }
+    </script>
+</head>
+
+<body onload='loadFavourites()'>
+    
+    <div class="header">
+        <h1 class="titles"> Preferiti</h1>
+        <p style="margin-left: 10px; width: 40%; display: inline-block;">Qui trovi i tuoi preferiti.</p>
+    </div>
+    <div class="header-center">
+        <a href="index.html">
+        <img src="logo.png" >
+        </a>
+        
+    </div>
+    <h2 id="titolo">Qui trovi i tuoi preferiti</h2>
+
+    <div id="favourites"></div>
+
+</body>
+
+</html>
