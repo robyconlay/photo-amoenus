@@ -26,6 +26,7 @@ yarn-error.log*
 
 # project specific files
 .env
+firebaseConfig.json
 
 
 ### Linux ###

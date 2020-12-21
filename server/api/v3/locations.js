@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require("mongoose");
 const multer = require("multer");
+const firebase = require('firebase');
+require('firebase/storage');
 const fs = require('fs');
 const path = require('path');
 
@@ -27,6 +29,7 @@ const upload = multer({
     },
     fileFilter: fileFilter
 });
+
 
 
 /**
@@ -72,7 +75,7 @@ router.get('/:id', (req, res, next) => {
     const id = req.params.id;
     if (id != null) {
         Location.findById(id)
-            .select('_id name address city description category raggiungibilita locationImage photoDesc hour date likes')
+            .select('_id name address city description category raggiungibilita locationImage photoDesc likes')
             .exec()
             .then(doc => {
                 if (doc) {
@@ -110,28 +113,44 @@ router.get('/:id', (req, res, next) => {
  *Add a location to database
  */
 router.post('/', authentication, upload.single('locationImage'), (req, res, next) => {
-    console.log(req.file);
+    // Set the configuration for your app
+    // TODO: Replace with your app's config object
+    const firebaseConfig = {
+        apiKey: process.env.apiKey,
+        authDomain: process.env.authDomain,
+        projectId: process.env.projectId,
+        storageBucket: process.env.storageBucket,
+        messagingSenderId: process.env.messagingSenderId,
+        appId: process.env.appId,
+        measurementId: process.env.measurementId
+    };
+    firebase.initializeApp(firebaseConfig);
 
-    console.log('POST locations/' + req.body.name + ' ' + req.body.description);
-    console.log(typeof (req.body.raggiungibilita.split(',')));
+    // Get a reference to the storage service, which is used to create references in your storage bucket
+    var storageRef = firebase.storage().ref();
 
+    console.log(req.file); //need 
 
-    const obj = {
-        _id: new mongoose.Types.ObjectId(),
-        img: {
-            data: req.file.buffer,
-            contentType: 'image/png' || 'image/jpeg' || 'image/jpg' || 'image/JPG'
-        }
+    //Funzione per convertire il buffer dell'immagine in stringa base64
+    function toBase64(arr) {
+        arr = new Uint8Array(arr);
+        return btoa(
+            arr.reduce((data, byte) => data + String.fromCharCode(byte), '')
+        );
     }
-    Image.create(obj, (err, item) => {
-        if (err) {
-            console.log(err);
-        } else {
-            console.log(item);
-            item.save();
-        }
-    });
+    const buffer = toBase64(req.file.buffer);
+    const type = res.file.type;
 
+
+    var file = req.file;
+    var filename = new Date().toISOString() + file.name;
+    // Create the file metadata
+    var metadata = {
+        contentType: 'image/jpeg'
+    };
+    storageRef.child('images/' + filename).put(file, metadata).then(function (snapshot) {
+        console.log('uploaded a blob or file');
+    });
 
     const location = new Location({
         _id: new mongoose.Types.ObjectId(),
@@ -141,10 +160,8 @@ router.post('/', authentication, upload.single('locationImage'), (req, res, next
         description: req.body.description.toLowerCase(),
         category: req.body.category.toLowerCase(),
         raggiungibilita: req.body.raggiungibilita.toLowerCase().split(','),
-        locationImage: obj._id,
+        locationImage: filename,
         photoDesc: req.body.photoDesc.toLowerCase(),
-        hour: req.body.hour.toLowerCase(),
-        date: req.body.date.toLowerCase(),
         likes: 0
     });
 

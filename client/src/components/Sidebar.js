@@ -1,6 +1,9 @@
 import React from 'react'
-import './style.css'
+
+import './Style.css'
+import './Sidebar.css'
 import '../fontawesome-free-5.15.1-web/js/all.js'
+import LoginController from'./LoginController' 
 
 function Logo() {
     return (
@@ -47,10 +50,11 @@ function Sidebar(props) {
                     text="Favourites"
                 />
                 <NavItem
-                    path="/login"
-                    svgName="fas fa-sign-in-alt"
-                    text="Login"
+                    path="/favourites"
+                    svgName="fas fa-heart"
+                    text="Settings"
                 />
+                <LoginController />
             </ul>
         </nav>
     )

@@ -12,9 +12,7 @@ const locationSchema = mongoose.Schema({
     category: {type: String, required: true},
     raggiungibilita: [{type: String, required: true}],
     locationImage: {type: mongoose.Schema.Types.ObjectId, ref: 'Image' , required: true},      //array of IDs, with every id identifying an image
-    photoDesc: {type: String, required: true},
-    hour: {type: String, required: true},
-    date: {type: String, required: true},   
+    photoDesc: {type: String, required: true}, 
     likes: Number
 });
 

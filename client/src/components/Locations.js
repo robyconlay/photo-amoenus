@@ -1,41 +1,63 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios'
+import './Style.css'
+import './Locations.css'
 
 function Location(props) {
-    console.log("props: " + props);
     return (
         <li>
-            <a href={`/locations/${props.id}`}>{props.name}</a>
+            <a href={`/location/${props.data._id}`}>{`${props.data.name}, ${props.data.city}`}</a>
         </li>
     )
 }
 
-function Locations(props) {
-    console.log(props);
-    return props.locations.map((location) => <Location data={location} />)
+function List({ locations }) {
+    return (
+        <div className="locations-list">
+            <ul>
+                {locations.map(location => {
+                    return <Location
+                        key={location._id}
+                        data={location} />
+                })}
+            </ul>
+        </div>
+    )
 }
 
+function Locations() {
+    const [locations, setLocations] = useState([]);
+    const [search, setSearch] = useState('');
 
-class LocationsPage extends React.Component {
-    state = {
-        locations: []
-    }
 
-    componentDidMount() {
+    useEffect(() => {
         axios.get('/api/locations')
-            .then(res => this.setState({ locations: res.data }))
-            .catch(err => console.log(err));
-    }
+            .then(res => {
+                const locations = res.data;
+                setLocations(locations);
+            });
+    }, [])
 
-    render() {
+    const filteredLocations = search.length === 0 ? locations
+        : locations.filter(location => location.name.toLowerCase().includes(search.toLowerCase())
+            || location.city.toLowerCase().includes(search.toLowerCase()));
 
-
-        return (
-            <main>
-                <Locations data={this.state.locations} />
-            </main>
-        )
-    }
+    return (
+        <main>
+            <div className="page">
+                <div className="search-div">
+                    <input
+                        className="searchbar"
+                        type="text"
+                        placeholder="search location"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
+                </div>
+                <List locations={filteredLocations} />
+            </div>
+        </main>
+    )
 }
 
-export default LocationsPage;
+export default Locations;
