@@ -1,7 +1,10 @@
 # Photo Amoenus
 
-**This project is not remotely finished**
+**This project is not finished**
+
 **The current finished version is at** https://github.com/robyconlay-uni/Photo-Amoenus
+
+
 ![](https://travis-ci.com/robyconlay-uni/Photo-Amoenus.svg?token=fvKtL7ZqYB3fRRxzP5pT&branch=main)
 
 RESTful
@@ -11,7 +14,9 @@ current work in progress: https://trello.com/b/lt4XWhzG/photo-amoenus
 
 ## Old version 
 
-linK: https://github.com/robyconlay-uni/Photo-Amoenus (currently private)
+link: https://github.com/robyconlay-uni/Photo-Amoenus (currently private)
+
+hosted on heroku: https://photo-amoenus.herokuapp.com/
 
 work in the first commit came from an University Project in the Course Software Engeneering 2
 Collaborators:
