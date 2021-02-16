@@ -1,9 +1,9 @@
 //here goes the script for the html page
 
 
- /* Gestisce l'aggiunta di un file(immagine)
- */
-function myFunction(){
+/* Gestisce l'aggiunta di un file(immagine)
+*/
+function myFunction() {
     var x = document.getElementById("myFile");
     var txt = "";
     if ('files' in x) {
@@ -49,9 +49,9 @@ function addLocation() {
 
     //Creo array Raggiungibilità
     var a = new Array();
-    for(var i=0; i<4; i++){
+    for (var i = 0; i < 4; i++) {
         var b = document.getElementById(`ragg[${i}]`);
-        if(b.checked){
+        if (b.checked) {
             a.push(b.value);
         }
     }
@@ -90,25 +90,25 @@ function addLocation() {
         headers: {
             'Authorization': 'Bearer ' + getCookie('token'),
         },
-        body: formData     
+        body: formData
     })
-    .then((resp) => resp.json())
-    .then((resp) => {
-        let mes = resp.message;
-        if (mes.localeCompare('Location created') == 0) {
-            /*window.alert("Location aggiunta con successo!");
-            window.open(`location.html?id=${resp.createdLocation._id}`, '_self');*/
-            //console.log(resp);
-            document.write(`<head><link rel="stylesheet" type="text/css" href="stylesheet.css">
+        .then((resp) => resp.json())
+        .then((resp) => {
+            let mes = resp.message;
+            if (mes.localeCompare('Location created') == 0) {
+                /*window.alert("Location aggiunta con successo!");
+                window.open(`location.html?id=${resp.createdLocation._id}`, '_self');*/
+                //console.log(resp);
+                document.write(`<head><link rel="stylesheet" type="text/css" href="stylesheet.css">
             </head><div id='center'><h1>Location aggiunta con successo!</h1><br><a href="location.html?id=${resp.createdLocation._id}">Vai alla location</a></div>`);
-        }else{
+            } else {
+                window.alert("Errore inserimento location, ricontrollare i campi");
+            }
+        })
+        .catch(error => {
+            console.error(error);
             window.alert("Errore inserimento location, ricontrollare i campi");
-        }
-    })
-    .catch(error => {
-        console.error(error);
-        window.alert("Errore inserimento location, ricontrollare i campi");
-    }); // If there is any error you will catch them here
+        }); // If there is any error you will catch them here
 
 }
 
@@ -116,7 +116,7 @@ function addLocation() {
 /**
  * Trova le città attualmente presenti nel database
  */
-function findCity(){
+function findCity() {
     const select = document.getElementById("citta");
     var a = new Set();
     fetch('/locations')
@@ -124,12 +124,12 @@ function findCity(){
         .then(function (data) {
 
             return data.locations.map(function (location) { // Map through the results and for each run the code below
-                if(! a.has(location.city)){
+                if (!a.has(location.city)) {
                     a.add(location.city);
                     console.log(location.city);
                     let option = document.createElement('option');
                     option.value = location.city;
-                    option.text= location.city;
+                    option.text = location.city;
                     select.appendChild(option);
                 }
             })
@@ -198,28 +198,28 @@ function setButtonState(id) {
             'Authorization': 'Bearer ' + getCookie('token')
         })
     })
-    .then(res => {
-        if (res.status == 404) {
-            console.log("404");
-            favDiv.innerHTML = `<button type="button" id="favButton" class="registerbtn" onclick="addFavourite('${id}')">Aggiungi ai preferiti</button>`;
-            return "";
-        } else {
-            return res.json();
-        }
-    })
-    .then(data => {
-        if (data != "") {
-            if (data.favourites.includes(id)) {
-                favDiv.innerHTML = `<button type="button" id="favButton" class="registerbtn" onclick="removeFavourite('${id}')">Rimuovi dai preferiti</button>`;
-            } else {
+        .then(res => {
+            if (res.status == 404) {
+                console.log("404");
                 favDiv.innerHTML = `<button type="button" id="favButton" class="registerbtn" onclick="addFavourite('${id}')">Aggiungi ai preferiti</button>`;
+                return "";
+            } else {
+                return res.json();
             }
-            console.log(id, data);
-        }
-    })
-    .catch(err => {
-        console.log(err);
-    });
+        })
+        .then(data => {
+            if (data != "") {
+                if (data.favourites.includes(id)) {
+                    favDiv.innerHTML = `<button type="button" id="favButton" class="registerbtn" onclick="removeFavourite('${id}')">Rimuovi dai preferiti</button>`;
+                } else {
+                    favDiv.innerHTML = `<button type="button" id="favButton" class="registerbtn" onclick="addFavourite('${id}')">Aggiungi ai preferiti</button>`;
+                }
+                console.log(id, data);
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        });
 };
 
 /**
@@ -233,25 +233,25 @@ function loadLocation(url_string) {
         .then(res => res.json())
         .then(res => {
             console.log(res.location);
-            
+
             //Funzione per convertire il buffer dell'immagine in stringa base64
             function toBase64(arr) {
                 arr = new Uint8Array(arr);
                 return btoa(
-                   arr.reduce((data, byte) => data + String.fromCharCode(byte), '')
+                    arr.reduce((data, byte) => data + String.fromCharCode(byte), '')
                 );
             }
             const buffer = toBase64(res.file.img.data.data);
             const type = res.file.img.contentType;
-            
-            
+
+
             document.getElementById("name").innerHTML = res.location.name;
             document.getElementById("address").innerHTML = res.location.address;
             document.getElementById("city").innerHTML = res.location.city;
             document.getElementById("description").innerHTML = res.location.description;
             document.getElementById("category").innerHTML = res.location.category;
             document.getElementById("raggiungibilita").innerHTML = res.location.raggiungibilita;
-            document.getElementById("locationImage").innerHTML =`<img src="data:${type};base64,${buffer}" width="900" height="600"></img>`;
+            document.getElementById("locationImage").innerHTML = `<img src="data:${type};base64,${buffer}" width="900" height="600"></img>`;
             document.getElementById("photoDesc").innerHTML = res.location.photoDesc;
             document.getElementById("hour").innerHTML = res.location.hour;
             document.getElementById("date").innerHTML = res.location.date;
@@ -370,18 +370,18 @@ function registration() {
             password: passworduser
         })
     })
-    .then((resp) => resp.json())
-    .then(function(data) {
-        let mes = data.message;
-        if (mes.localeCompare("User created") == 0) {
-            document.write(`<link rel="stylesheet" type="text/css" href="stylesheet.css"> <div id='center'><h1>Registrazione avvenuta con successo!</h1><br><h3>Ora prova a fare log In!</h3><br><a href='login.html'> <button style=" float: left"class="locationbtn"onclick="window.location.href='login.html';"> Torna al login</button></a></div>"`);
-        } else if (mes.localeCompare("user already exist") == 0) {
-            document.write("<div id='center'><h1>Utente già esistente!</h1><br><a href='registration.html'>Torna alla registrazione</a></div>");
-        } else {
-            document.write(`<link rel="stylesheet" type="text/css" href="stylesheet.css"> <div id='center'><h1>Errore nella fase di registrazione!</h1><br><a href='registration.html'><button style=" float: left"class="locationbtn"onclick="window.location.href='registration.html';"> Torna al signup</button></a></div>`);
-        }
-        console.log(mes);
-    });
+        .then((resp) => resp.json())
+        .then(function (data) {
+            let mes = data.message;
+            if (mes.localeCompare("User created") == 0) {
+                document.write(`<link rel="stylesheet" type="text/css" href="stylesheet.css"> <div id='center'><h1>Registrazione avvenuta con successo!</h1><br><h3>Ora prova a fare log In!</h3><br><a href='login.html'> <button style=" float: left"class="locationbtn"onclick="window.location.href='login.html';"> Torna al login</button></a></div>"`);
+            } else if (mes.localeCompare("user already exist") == 0) {
+                document.write("<div id='center'><h1>Utente già esistente!</h1><br><a href='registration.html'>Torna alla registrazione</a></div>");
+            } else {
+                document.write(`<link rel="stylesheet" type="text/css" href="stylesheet.css"> <div id='center'><h1>Errore nella fase di registrazione!</h1><br><a href='registration.html'><button style=" float: left"class="locationbtn"onclick="window.location.href='registration.html';"> Torna al signup</button></a></div>`);
+            }
+            console.log(mes);
+        });
 }
 
 /**
@@ -392,16 +392,16 @@ function Popup(url_location) {
     var id = url.searchParams.get("id");
     var stili = "top=100, left=300, width=500, height=450, status=no, menubar=no, toolbar=no scrollbars=no";
     window.open("popupReport.html?id=" + id, "", stili);
-    }
+}
 
 /**
  * Funzine per gestire i report
 */
-    function Report() {
-        var choice;
-    
-        var radios = document.getElementsByName('reports');
-    
+function Report() {
+    var choice;
+
+    var radios = document.getElementsByName('reports');
+
     for (var i = 0, length = radios.length; i < length; i++) {
         if (radios[i].checked) {
 
@@ -444,32 +444,32 @@ function Close() {
  */
 function login() {
 
-let logemail = document.getElementById("loginEmail").value;
-let logpassword = document.getElementById("loginPd").value;
+    let logemail = document.getElementById("loginEmail").value;
+    let logpassword = document.getElementById("loginPd").value;
 
-fetch('../user/login', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-        email: logemail,
-        password: logpassword
-    }),
-})
-.then((resp) => resp.json())
-.then(function(data) {
-    let mes = data.message;
-    if (mes.localeCompare("Auth successful") == 0) {
-        document.write("<html><head><link rel='stylesheet' type='text/css' href='stylesheet.css'></head><body><div id='center' class='popup'><h1>Log in avvenuto con successo!</h1><form action='index.html'><button class= 'registerbtn' type='submit'> Torna alla home page </button></form> </body></html>");
-        setCookie("token",data.token,1);
-        setCookie("email",logemail,1);
-    } else if (mes.localeCompare("Auth failed") == 0) {
-        document.write("<html><head><link rel='stylesheet' type='text/css' href='stylesheet.css'></head><body><div id='center'><h1>Log in non riuscito!</h1><br><form action='login.html'><button class= 'registerbtn' type='submit'>Torna al LogIn</button></div></body></html>");
-    } else {
-        document.write("<html><head><link rel='stylesheet' type='text/css' href='stylesheet.css'></head><body><div id='center'><h1>Errore!</h1><br><form action='login.html'><button class= 'registerbtn' type='submit'>Torna al LogIn</body></div></body></html>");
-    }
-    console.log(mes);
-    
-});
+    fetch('../user/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            email: logemail,
+            password: logpassword
+        }),
+    })
+        .then((resp) => resp.json())
+        .then(function (data) {
+            let mes = data.message;
+            if (mes.localeCompare("Auth successful") == 0) {
+                document.write("<html><head><link rel='stylesheet' type='text/css' href='stylesheet.css'></head><body><div id='center' class='popup'><h1>Log in avvenuto con successo!</h1><form action='index.html'><button class= 'registerbtn' type='submit'> Torna alla home page </button></form> </body></html>");
+                setCookie("token", data.token, 1);
+                setCookie("email", logemail, 1);
+            } else if (mes.localeCompare("Auth failed") == 0) {
+                document.write("<html><head><link rel='stylesheet' type='text/css' href='stylesheet.css'></head><body><div id='center'><h1>Log in non riuscito!</h1><br><form action='login.html'><button class= 'registerbtn' type='submit'>Torna al LogIn</button></div></body></html>");
+            } else {
+                document.write("<html><head><link rel='stylesheet' type='text/css' href='stylesheet.css'></head><body><div id='center'><h1>Errore!</h1><br><form action='login.html'><button class= 'registerbtn' type='submit'>Torna al LogIn</body></div></body></html>");
+            }
+            console.log(mes);
+
+        });
 
 }
 
@@ -477,9 +477,9 @@ fetch('../user/login', {
  * Log Out
  */
 function Logout() {
-  eraseCookie('token');
-  eraseCookie('email');
-  location.reload();
+    eraseCookie('token');
+    eraseCookie('email');
+    location.reload();
 }
 
 // Part for the cookies if ever needed-----------
@@ -544,14 +544,14 @@ function loadButtons() {
         document.getElementById("prefButton").style.display = 'block'; //show favorites button
         document.getElementById("logButton").style.display = 'none'; //hide login button
         document.getElementById("regButton").style.display = 'none'; //hide login button
-        
 
-    if (mail.localeCompare("manager@hotmail.it") == 0) {
-        document.getElementById('reportListButton').style.display = 'block'; //show report list button only to manager account
-    } 
-} else {
-    document.getElementById("logButton").style.display = 'block'; //show login button
-    document.getElementById("regButton").style.display = 'block'; //show login button
-}
+
+        if (mail.localeCompare("manager@hotmail.it") == 0) {
+            document.getElementById('reportListButton').style.display = 'block'; //show report list button only to manager account
+        }
+    } else {
+        document.getElementById("logButton").style.display = 'block'; //show login button
+        document.getElementById("regButton").style.display = 'block'; //show login button
+    }
 
 }

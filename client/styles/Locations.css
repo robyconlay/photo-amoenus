@@ -1,0 +1,76 @@
+:root {
+    font-size: 16px;
+    font-family: 'Open Sans';
+    --text-primary: #b6b6b6;
+    --text-secondary: #ececec;
+    --bg-primary: #23232e;
+    --bg-secondary: #141418;
+    --transition-speed: 600ms;
+}
+
+body {
+    color: black;
+    background-color: white;
+    margin: 0;
+    padding: 0;
+}
+
+main {
+    margin-left: 5rem;
+    padding: 1rem;
+}
+
+.page {
+    width: 60vw;
+    float: left;
+}
+
+.search-div {}
+
+.searchbar {
+    padding: 1rem;
+    width: 70%;
+    border-radius: 20px;
+}
+
+.locations-list {}
+
+.locations-list ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.locations-list li {
+    padding: 1rem;
+    border: 1px solid black;
+}
+
+.locations-list a {
+    text-decoration: none;
+    color: black;
+}
+
+.locations-list a:hover {
+    text-decoration: none;
+}
+
+.locations-list a:visited {
+    text-decoration: none;
+    color: black;
+}
+
+.filter-container {
+    width: 30vw;
+    float: left;
+    right: 0;
+}
+
+
+.filter-menu {
+    display: block;    
+}
+
+.filter{
+    display: inline;
+    width: 100%;
+}

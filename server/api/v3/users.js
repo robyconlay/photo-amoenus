@@ -1,15 +1,24 @@
+//libraries
 const express = require('express');
 const mongoose = require('mongoose');
 const bcryptjs = require('bcryptjs');
 const jwt = require("jsonwebtoken");
+const cookie = require('cookie');
 
+//database schemas
 const authentication = require('./middleware/authentication.js');
-
 const User = require("./models/userScheme");
 
 const router = express.Router();
 
+//variables
+const route = '/api/users/'
+
+
 router.get('/', (req, res) => {
+    const subroute = route + "";
+    const requestType = 'GET';
+
     User.find()
         .select('_id email password')
         .exec()
@@ -81,6 +90,16 @@ router.post('/signup', (req, res, next) => {
                         .save()
                         .then(result => {
                             console.log(result);
+                            const token = jwt.sign({
+                                    email: user.email,
+                                    userId: user._id
+                                },
+                                process.env.JWT_KEY, {
+                                    expiresIn: "1h"
+                                }
+                            );
+                            res.setHeader('Set-Cookie', cookie.serialize('token', token)); //maxage?
+                            res.setHeader('Set-Cookie', cookie.serialize('uid', user._id));
                             res.status(201).json({
                                 message: 'User created'
                             });
@@ -111,33 +130,39 @@ router.post("/login", (req, res, next) => {
     User.findOne({ email: req.body.email })
         .exec()
         .then(user => {
-            bcryptjs.compare(req.body.password, user.password, (err, result) => {
-                if (err) {
-                    return res.status(401).json({
+            if (!user) {
+                res.status(500).json({
+                    message: "email not found"
+                })
+            } else {
+                bcryptjs.compare(req.body.password, user.password, (err, result) => {
+                    if (err) {
+                        return res.status(401).json({
+                            message: "Auth failed"
+                        });
+                    }
+                    if (result) {
+                        const token = jwt.sign({
+                                email: user.email,
+                                userId: user._id
+                            },
+                            process.env.JWT_KEY, {
+                                expiresIn: "1h"
+                            }
+                        );
+                        res.setHeader('Set-Cookie', cookie.serialize('token', token)); //maxage?
+                        res.setHeader('Set-Cookie', cookie.serialize('uid', user._id));
+                        return res.status(200).json({
+                            message: "Auth successful",
+                            token: token,
+                            uid: user._id
+                        });
+                    }
+                    res.status(401).json({
                         message: "Auth failed"
                     });
-                }
-                if (result) {
-                    const token = jwt.sign(
-                        {
-                            email: user.email,
-                            userId: user._id
-                        },
-                        process.env.JWT_KEY,
-                        {
-                            expiresIn: "1h"
-                        }
-                    );
-                    return res.status(200).json({
-                        message: "Auth successful",
-                        token: token,
-                        uid: user._id
-                    });
-                }
-                res.status(401).json({
-                    message: "Auth failed"
                 });
-            });
+            }
         })
         .catch(err => {
             console.log('Not exists user with this email, AUTH FAILED');

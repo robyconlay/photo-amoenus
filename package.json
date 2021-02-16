@@ -4,6 +4,7 @@
   "description": "![](https://travis-ci.com/robyconlay-uni/Photo-Amoenus.svg?token=fvKtL7ZqYB3fRRxzP5pT&branch=main)",
   "main": "index.js",
   "scripts": {
+    "dev": "concurrently \"cd server && npm start\" \"cd client && npm run dev\"",
     "start": "concurrently \"cd server && npm start\" \"cd client && npm start\""
   },
   "repository": {
