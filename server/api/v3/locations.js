@@ -57,17 +57,17 @@ router.get('/', (req, res, next) => {
         .byAccess(accessibility)
         .select('locId name city likes ') //all ?
         .exec()
-        .then(data => {
+        .then(locations => {
             res.status(200).json({
-                data,
+                locations,
                 route: "api/locations/",
                 type: "GET",
                 message: "success retrieval of locations"
             })
         })
-        .catch(err => {
+        .catch(error => {
             res.status(404).json({
-                error: err,
+                error,
                 route: "api/locations/",
                 type: "GET",
                 message: "failure retrieval of locations"
@@ -81,7 +81,7 @@ router.get('/', (req, res, next) => {
 router.get('/:id', (req, res, next) => {
     const locId = sanitize(req.params.id);
 
-    if (locId && ObjectId.isValid(locId)) {
+    if (locId && mongoose.isValidObjectId(locId)) {
         Location.findById(locId)
             .select('locId name address city slug description category accessibility locationImage photoDesc likes')
             .exec()
@@ -105,18 +105,18 @@ router.get('/:id', (req, res, next) => {
                             message: `success retrieval of location with id: ${locId}`
                         });
                     })
-                    .catch(err => {
+                    .catch(error => {
                         return res.status(500).json({
-                            error: err,
+                            error,
                             route: "api/locations/:id",
                             type: "GET",
                             message: `failure retrieval of location with id: ${locId}`
                         });
                     });
             })
-            .catch(err => {
+            .catch(error => {
                 return res.status(500).json({
-                    error: err,
+                    error,
                     route: "api/locations/:id",
                     type: "GET",
                     message: `failure retrieval of location with id: ${id}`
@@ -189,7 +189,7 @@ router.post('/', userAuth, upload.single('locationImage'), async(req, res, next)
 
     let slug = (req.body.name + req.body.address + req.body.city).replace(" ", "-");
     let uid = req.userData.uid;
-    if (!uid || !ObjectId.isValid(uid)) {
+    if (!uid || !mongoose.isValidObjectId(uid)) {
         return res.status(500).json({
             message: `Could not create location`,
             route: '/api/location/',
@@ -276,7 +276,7 @@ router.post('/', userAuth, upload.single('locationImage'), async(req, res, next)
 router.patch('/:id', (req, res) => {
     const locId = sanitize(req.params.id);
 
-    if (!locId || !ObjectId.isValid(locId)) {
+    if (!locId || !mongoose.isValidObjectId(locId)) {
         return res.status(500).json({
             message: `Error during fetching of location`,
             route: '/api/location/:id',
@@ -333,7 +333,7 @@ router.patch('/:id', (req, res) => {
 router.delete('/:id', userAuth, (req, res, next) => {
     const locId = sanitize(req.params.id);
 
-    if (!locId || !ObjectId.isValid(locId)) {
+    if (!locId || !mongoose.isValidObjectId(locId)) {
         return res.status(500).json({
             message: `Error during deletion of location`,
             route: '/api/location/:id',

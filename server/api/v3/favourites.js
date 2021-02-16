@@ -2,20 +2,14 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require("mongoose");
+const sanitize = require('mongo-sanitize');
 
 const Favourites = require('./models/favouriteScheme');
-const authentication = require('./middleware/authentication.js');
-
-//variables
-const route = '/api/favourites/';
-
-
+const userAuth = require('./middleware/authentication.js');
 /**
  * get all favourites of all users
  */
-router.get('/all', (req, res) => {
-    const subroute = route + 'all';
-    const requestType = 'GET';
+router.get('/all', (req, res) => { //needs to be an admin route
 
     Favourites.find()
         .select("_id favourites")
@@ -25,28 +19,25 @@ router.get('/all', (req, res) => {
                 res.status(200).json({
                     data,
                     message: 'Success retrieving favourites',
-                    route,
-                    subroute,
-                    requestType,
+                    route: "/api/favourites/all",
+                    requestType: "GET",
                     description: 'Description'
                 });
             } else {
                 res.status(404).json({
                     message: 'Error retrieving favourites',
-                    route,
-                    subroute,
-                    requestType,
+                    route: "/api/favourites/all",
+                    requestType: "GET",
                     description: 'No favourites exist'
                 });
             }
         })
-        .catch(err => {
+        .catch(error => {
             res.status(500).json({
-                error: err,
+                error,
                 message: 'Error retrieving favourites',
-                route,
-                subroute,
-                requestType,
+                route: "/api/favourites/all",
+                requestType: "GET",
                 description: 'Error fetching data from database'
             });
         });
@@ -55,11 +46,11 @@ router.get('/all', (req, res) => {
 /**
  * get favourites of 1 user
  */
-router.get('/', authentication, (req, res) => {
+router.get('/', userAuth, (req, res) => {
     var uid = req.userData.uid;
 
-    Favourites.findOne({ _id: uid })
-        .select("_id favourites_ids")
+    Favourites.findOne({ uid })
+        .select("uid favourites_ids")
         .exec()
         .then(data => {
             if (data && data.favourites_ids.length != 0) {
@@ -81,9 +72,9 @@ router.get('/', authentication, (req, res) => {
                 });
             }
         })
-        .catch(err => {
+        .catch(error => {
             res.status(500).json({
-                error: err,
+                error,
                 message: 'Error retrieving favourites',
                 route: '/api/favourites/',
                 requestType: 'GET',
@@ -97,20 +88,29 @@ router.get('/', authentication, (req, res) => {
  * expand favourites of a user
  * pass id of locations in body
  */
-router.post('/add/:id', authentication, (req, res) => {
-    var locationID = req.params.id;
+router.post('/add/:id', userAuth, (req, res) => {
+    var locID = sanitize(req.params.id);
     var uid = req.userData.userId;
 
-    Favourites.findOne({ _id: uid })
+    if (!locID || !mongoose.isValidObjectId(locID)) {
+        return res.status(500).json({
+            message: 'Error adding favourite',
+            route: '/api/favourites/add/:id',
+            requestType: 'POST',
+            required: "user token. locID",
+            description: 'Invalid locID'
+        });
+    }
+
+    Favourites.findOne({ uid })
         .exec()
         .then(async data => {
             if (!data) {
                 //create favourites
                 const favourite = new Favourites({
-                    _id: uid,
+                    uid: uid,
                     favourites_ids: [], //empty array for initialization
-                    createdAt: new Date(),
-                    updatedAt: null
+                    createdAt: new Date()
                 });
 
                 await favourite
@@ -118,15 +118,15 @@ router.post('/add/:id', authentication, (req, res) => {
                     .catch(error => {
                         return res.status(500).json({
                             error,
-                            message: 'Error saving favourites',
-                            route: '/api/favourites/:id',
+                            message: 'Error adding favourite',
+                            route: '/api/favourites/add/:id',
                             requestType: 'POST',
-                            required: "user token",
+                            required: "user token, locID",
                             description: 'Error saving data to database'
                         });
                     });
             } else {
-                if (data.favourites.includes(locationID)) {
+                if (data.favourites.includes(locID)) {
                     return res.status(409).json({
                         message: "Location is already in user's favourites",
                         route: '/api/favourites/:id',
@@ -138,15 +138,15 @@ router.post('/add/:id', authentication, (req, res) => {
             }
         });
 
-    Favourites.updateOne({ _id: id }, { $push: { favourites: locationID, updatedAt: new Date() } })
+    Favourites.updateOne({ uid }, { $push: { favourites_ids: locID, updatedAt: new Date() } })
         .exec()
         .then(result => {
             res.status(200).json({
                 result,
                 message: "Favourite added with success",
-                route: '/api/favourites/:id',
+                route: '/api/favourites/add/:id',
                 requestType: 'POST',
-                required: "user token",
+                required: "user token, locID",
                 description: 'Favourites updated with success'
             });
         })
@@ -154,23 +154,32 @@ router.post('/add/:id', authentication, (req, res) => {
             res.status(500).json({
                 error,
                 message: "Error updating favourites",
-                route: '/api/favourites/:id',
+                route: '/api/favourites/add/:id',
                 requestType: 'POST',
-                required: "user token",
+                required: "user token, locID",
                 description: 'Error updating database'
             });
         });
-
 });
 
 /**
  * delete one in the favourites of the user
  */
-router.delete('/remove/:id', authentication, (req, res) => {
-    var locationID = req.params.id;
+router.delete('/remove/:id', userAuth, (req, res) => {
+    var locID = sanitize(req.params.id);
     var uid = req.userData.userId;
 
-    Favourites.updateOne({ _id: uid }, { $pull: { favourites: locationID } })
+    if (!locID || !mongoose.isValidObjectId(locID)) {
+        return res.status(500).json({
+            message: 'Error adding favourite',
+            route: '/api/favourites/remove/:id',
+            requestType: 'DELETE',
+            required: "user token. locID",
+            description: 'Invalid locID'
+        });
+    }
+
+    Favourites.updateOne({ uid }, { $pull: { favourites_ids: locID } })
         .exec()
         .then(result => {
             res.status(200).json({
@@ -197,11 +206,12 @@ router.delete('/remove/:id', authentication, (req, res) => {
 /**
  * delete all favourites in table
  */
-router.delete('/all', (req, res) => {
+router.delete('/all', (req, res) => { //needs to be an admin route
     Favourites.deleteMany({})
         .exec()
         .then(result => {
             res.status(200).json({
+                result,
                 message: 'All favourites deleted',
                 route: '/api/remove/all',
                 requestType: 'DELETE',
@@ -223,10 +233,10 @@ router.delete('/all', (req, res) => {
 /**
  * delete all favourites of the user
  */
-router.delete('/', authentication, (req, res) => {
+router.delete('/', userAuth, (req, res) => {
     var uid = req.userData.userId;
 
-    Favourites.deleteOne({ _id: uid })
+    Favourites.deleteOne({ uid })
         .exec()
         .then(result => {
             res.status(200).json({

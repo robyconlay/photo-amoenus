@@ -6,37 +6,38 @@ const jwt = require("jsonwebtoken");
 const cookie = require('cookie');
 
 //database schemas
-const authentication = require('./middleware/authentication.js');
+const userAuth = require('./middleware/authentication.js');
 const User = require("./models/userScheme");
+const sanitize = require('mongo-sanitize');
 
 const router = express.Router();
 
-//variables
-const route = '/api/users/'
-
-
-router.get('/', (req, res) => {
-    const subroute = route + "";
-    const requestType = 'GET';
-
+router.get('/', (req, res) => { //admin route
     User.find()
-        .select('_id email password')
+        .select('uid email password')
         .exec()
-        .then(docs => {
-            if (!docs) {
-                console.log('Errore nel trovare gli user');
-                res.status(404).json({
-                    message: 'Error retrieving users'
+        .then(users => {
+            if (!users) {
+                return res.status(404).json({
+                    message: 'Error retrieving users',
+                    route: '/api/users/',
+                    requestType: 'GET',
+                    description: `There are no users in database`
                 });
             }
-            res.status(200).json({
-                users: docs
+            return res.status(200).json({
+                users,
+                message: 'Users retrieved successfully',
+                route: '/api/users/',
+                requestType: 'GET',
             });
         })
-        .catch(err => {
-            console.log(err);
+        .catch(error => {
             res.status(500).json({
-                error: err
+                error,
+                message: 'Error retrieving users',
+                route: '/api/users/',
+                requestType: 'GET'
             });
         });
 });
@@ -44,130 +45,165 @@ router.get('/', (req, res) => {
 /**
  * function for admin use only
  */
-router.get('/:id', (req, res) => {
-    User.findOne({ _id: req.params.id })
-        .select('_id email password')
+router.get('/:id', (req, res) => { //admin route
+    var uid = req.params.id;
+
+    if (!uid || !mongoose.isValidObjectId(uid)) {
+        return res.status(500).json({
+            message: 'Error retrieving user',
+            route: '/api/users/:id',
+            requestType: 'GET',
+            required: "user id",
+            description: 'Invalid uid'
+        });
+    }
+
+    User.findOne({ uid })
+        .select('uid email password')
         .exec()
         .then(docs => {
             if (!docs) {
-                console.log('Error in retrieving user');
-                res.status(404).json({
+                return res.status(404).json({
                     message: 'Error retrieving users'
                 });
             }
-            res.status(200).json(docs);
+            return res.status(200).json(docs);
         })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json({
-                error: err
+        .catch(error => {
+            return res.status(500).json({
+                error
             });
         });
 });
 
 router.post('/signup', (req, res, next) => {
-    var id;
-    if (req.body._id == null) {
-        id = new mongoose.Types.ObjectId;
-    } else {
-        id = req.body._id;
-    }
-    User.findOne({ email: req.body.email })
+    var { email, password, name, surname } = req.body;
+    email = sanitize(email);
+
+    User.findOne({ email })
         .exec()
         .then(user => {
-            bcryptjs.hash(req.body.password, 10, (err, hash) => {
-                if (err) {
+            if (user) {
+                return res.status(409).json({
+                    error,
+                    route: "/api/users/signup/",
+                    requestType: "POST",
+                    message: "This email is already registered"
+                });
+            }
+            bcryptjs.hash(password, 10, (error, hash) => {
+                if (error) {
                     return res.status(500).json({
-                        message: err
+                        error,
+                        route: "/api/users/signup/",
+                        requestType: "POST",
+                        message: "Error creating user"
                     });
                 } else {
                     const user = new User({
-                        _id: id,
-                        email: req.body.email,
-                        password: hash
+                        uid: new mongoose.Types.ObjectId(),
+                        email: email,
+                        password: hash,
+                        name,
+                        surname,
+                        createdAt: new Date()
                     });
                     user
                         .save()
                         .then(result => {
-                            console.log(result);
                             const token = jwt.sign({
                                     email: user.email,
-                                    userId: user._id
+                                    uid: user.uid
                                 },
                                 process.env.JWT_KEY, {
                                     expiresIn: "1h"
                                 }
                             );
                             res.setHeader('Set-Cookie', cookie.serialize('token', token)); //maxage?
-                            res.setHeader('Set-Cookie', cookie.serialize('uid', user._id));
+                            res.setHeader('Set-Cookie', cookie.serialize('uid', user.uid));
                             res.status(201).json({
-                                message: 'User created'
+                                message: 'User created',
+                                result,
+                                route: "/api/users/signup/",
+                                requestType: "POST"
                             });
                         })
-                        .catch(err => {
-                            res.status(422).json({
-                                message: err + 'User with email ' + req.body.email + ' already exists'
+                        .catch(error => {
+                            return res.status(500).json({
+                                error,
+                                route: "/api/users/signup/",
+                                requestType: "POST",
+                                message: "Error creating user"
                             });
                         });
                 }
             });
-
         })
 });
 
 
 router.post("/login", (req, res, next) => {
-    if (req.body.email == '' || req.body.email == null) {
+    var email = sanitize(req.body.email);
+    var password = req.body.password;
+
+    if (!email || !password || email == "" || password == "") {
         return res.status(500).json({
-            message: 'No email sent'
+            message: 'No email or password given',
+            route: "/api/users/login",
+            requestType: "POST"
         })
     }
-    if (req.body.password == '' || req.body.password == null) {
-        return res.status(500).json({
-            message: 'No password sent'
-        })
-    }
-    User.findOne({ email: req.body.email })
+    User.findOne({ email })
         .exec()
         .then(user => {
             if (!user) {
                 res.status(500).json({
-                    message: "email not found"
+                    message: "User with this email not found",
+                    route: "/api/users/login",
+                    requestType: "POST"
                 })
             } else {
-                bcryptjs.compare(req.body.password, user.password, (err, result) => {
-                    if (err) {
+                bcryptjs.compare(password, user.password, (error, result) => {
+                    if (error) {
                         return res.status(401).json({
-                            message: "Auth failed"
+                            message: "Auth failed",
+                            route: "/api/users/login",
+                            requestType: "POST"
                         });
                     }
                     if (result) {
                         const token = jwt.sign({
                                 email: user.email,
-                                userId: user._id
+                                uid: user.uid
                             },
                             process.env.JWT_KEY, {
                                 expiresIn: "1h"
                             }
                         );
                         res.setHeader('Set-Cookie', cookie.serialize('token', token)); //maxage?
-                        res.setHeader('Set-Cookie', cookie.serialize('uid', user._id));
+                        res.setHeader('Set-Cookie', cookie.serialize('uid', user.uid));
                         return res.status(200).json({
                             message: "Auth successful",
-                            token: token,
-                            uid: user._id
+                            token,
+                            uid: user.uid,
+                            route: "/api/users/login",
+                            requestType: "POST"
                         });
                     }
-                    res.status(401).json({
-                        message: "Auth failed"
+                    return res.status(401).json({
+                        message: "Auth failed",
+                        route: "/api/users/login",
+                        requestType: "POST"
                     });
                 });
             }
         })
-        .catch(err => {
-            console.log('Not exists user with this email, AUTH FAILED');
-            res.status(401).json({
-                error: err + 'Not exists user with this email'
+        .catch(error => {
+            return res.status(401).json({
+                error,
+                message: 'Not exists user with this email',
+                route: "/api/users/login",
+                requestType: "POST"
             });
         });
 });
@@ -175,52 +211,73 @@ router.post("/login", (req, res, next) => {
 /**
  * api to be used from a user to delete their account
  */
-router.delete("/", authentication, (req, res, next) => {
-    //also doable with email address
-    id = req.userData.uid;
-    if (mongoose.isValidObjectId(id)) {
-        User.remove({ _id: id })
-            .exec()
-            .then(result => {
-                res.status(201).json({
-                    message: 'User deleted'
-                });
-            })
-            .catch(err => {
-                console.log(err);
-                res.status(500).json({
-                    error: err
-                });
-            });
-    } else {
-        res.status(404).json({
-            message: 'No Id passed'
-        })
+router.delete("/", userAuth, (req, res, next) => { //needs to cascade delete everything else related to this account
+    var email = sanitize(req.userData.email);
+
+    if (!email || email == "") {
+        return res.status(500).json({
+            message: "No email given",
+            route: "/api/users/",
+            requestType: "DELETE",
+            required: "user token"
+        });
     }
+
+    User.remove({ uid })
+        .exec()
+        .then(result => {
+            return res.status(201).json({
+                message: 'User deleted',
+                result,
+                route: "/api/users/",
+                requestType: "DELETE",
+                required: "user token"
+            });
+        })
+        .catch(error => {
+            return res.status(500).json({
+                error,
+                message: "Error during removing of user",
+                route: "/api/users/",
+                requestType: "DELETE",
+                required: "user token"
+            });
+        });
 });
 
 /**
  * admin function to delete user
  */
-router.delete("/:id", (req, res, next) => {
-    id = req.params.id;
-    if (mongoose.isValidObjectId(id)) {
-        User.remove({ _id: id })
+router.delete("/:id", (req, res, next) => { //admin route
+    var uid = req.params.id;
+
+    if (mongoose.isValidObjectId(uid)) {
+        User.remove({ uid: uid })
             .exec()
             .then(result => {
-                res.status(201).json({
-                    message: 'User deleted'
+                return res.status(201).json({
+                    message: 'User deleted',
+                    result,
+                    route: "/api/users/:id",
+                    requestType: "DELETE",
+                    required: "user token"
                 });
             })
-            .catch(err => {
-                console.log(err);
-                res.status(500).json({
-                    error: err
+            .catch(error => {
+                return res.status(500).json({
+                    error,
+                    message: 'Failed to delete user',
+                    route: "/api/users/:id",
+                    requestType: "DELETE",
+                    required: "uid"
                 });
             });
     } else {
-        res.status(404).json({
-            message: 'No Id passed'
+        return res.status(404).json({
+            message: 'Invalid Id',
+            route: "/api/users/:id",
+            requestType: "DELETE",
+            required: "uid"
         })
     }
 });

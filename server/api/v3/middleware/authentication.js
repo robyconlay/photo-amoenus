@@ -15,8 +15,14 @@ module.exports = (req, res, next) => {
 
     } catch (error) {
         return res.status(401).json({
-            message: 'Auth failed'
+            message: 'Auth failed',
+            error,
+            description: "Invalid token"
         });
     }
 
 };
+
+/**
+ * if token is valid, than uid is also valid
+ */

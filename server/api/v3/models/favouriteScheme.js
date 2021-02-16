@@ -3,10 +3,25 @@
 const mongoose = require('mongoose');
 
 const favouriteSchema = mongoose.Schema({
-    _id: mongoose.Schema.Types.ObjectId, //id of user
-    favourites_ids: [mongoose.Schema.Types.ObjectId],
-    createdAt: Date,
-    updatedAt: Date
+    uid: {
+        type: mongoose.ObjectId,
+        required: true,
+        unique: true,
+        index: true
+    },
+    favourites_ids: {
+        type: [mongoose.ObjectId],
+    },
+    createdAt: {
+        type: Date,
+        required: true,
+        immutable: true
+    },
+    updatedAt: {
+        type: Date,
+        required: false,
+        default: null
+    }
 });
 
 module.exports = mongoose.model('Favourites', favouriteSchema);
