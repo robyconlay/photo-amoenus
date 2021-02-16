@@ -14,9 +14,7 @@ current work in progress: https://trello.com/b/lt4XWhzG/photo-amoenus
 
 ## Old version 
 
-Original repo: https://github.com/robyconlay-uni/Photo-Amoenus (currently private)
-
-Cloned repo: https://github.com/robyconlay/photo-amoenus
+link: https://github.com/robyconlay-uni/Photo-Amoenus
 
 hosted on heroku: https://photo-amoenus-api.herokuapp.com/
 
