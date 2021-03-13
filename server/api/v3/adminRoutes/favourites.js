@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require("mongoose");
 
-const Favourites = require('./models/favouriteScheme');
+const Favourites = require('../models/favouriteScheme');
 const adminAuth = require('./middleware/authentication.js');
 
 /**

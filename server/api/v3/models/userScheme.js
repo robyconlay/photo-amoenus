@@ -2,7 +2,7 @@
 
 const mongoose = require('mongoose');
 
-const userSchema = mongoose.Schema({
+const accountSchema = mongoose.Schema({
     uid: {
         type: mongoose.ObjectId,
         unique: true
@@ -22,6 +22,10 @@ const userSchema = mongoose.Schema({
     surname: {
         type: String
     },
+    active: {
+        type: Boolean,
+        default: false
+    },
     createdAt: {
         type: Date,
         required: true,
@@ -34,4 +38,4 @@ const userSchema = mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('user', userSchema);
+module.exports = mongoose.model('account', accountSchema);

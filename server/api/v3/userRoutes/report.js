@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const multer = require("multer");
 
 const userAuth = require('./middleware/authentication.js');
-const Report = require("./models/reportScheme");
+const Report = require("../models/reportScheme");
 
 const router = express.Router();
 

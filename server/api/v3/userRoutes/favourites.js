@@ -4,7 +4,7 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const sanitize = require('mongo-sanitize');
 
-const Favourites = require('./models/favouriteScheme');
+const Favourites = require('../models/favouriteScheme');
 const userAuth = require('./middleware/authentication.js');
 /**
  * get all favourites of all users

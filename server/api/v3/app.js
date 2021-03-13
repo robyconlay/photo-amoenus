@@ -2,13 +2,14 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
-const path = require('path')
-const rfs = require('rotating-file-stream') // version 2.x
+const path = require('path');
+const rfs = require('rotating-file-stream'); // version 2.x
+const cookieParser = require('cookie-parser');
 
 // const winston = require('winston');
 // const expressWinston = require('express-winston');
 
-var app = express()
+var app = express();
 
 // create a rotating write stream
 var accessLogStream = rfs.createStream('access.log', {
@@ -22,18 +23,19 @@ app.use(morgan('combined', { stream: accessLogStream }))
 app.use(express.static('uploads'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser(process.env.COOKIE_SECRET));
 
 app.set("view engine", "ejs");
 
 
 mongoose.connect(process.env.DB_URL, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    })
-    .catch(err => {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+    .catch(error => {
         console.log({
             message: "Failed to connect to MongoDB",
-            err
+            error
         });
         exit(1);
     });
@@ -48,6 +50,12 @@ app.use((req, res, next) => {
         req.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
         return res.status(200).json({});
     }
+    next();
+});
+
+app.use((req, res, next) => {
+    const { originalUrl, params, query, body, signedCookies, _startTime, _remoteAddress } = req;
+    console.log(originalUrl, params, query, body, signedCookies, _startTime, _remoteAddress);
     next();
 });
 
@@ -71,23 +79,29 @@ app.use('/', express.static('../../../client/build')); //default path
 // }));
 
 
+//user routes
+const user_locationsRoutes = require('./userRoutes/locations.js');
+app.use('/api/locations', user_locationsRoutes);
 
-/* Moduli per la gestione delle richieste alle API */
-const locationsRoute = require('./locations.js');
-app.use('/api/locations', locationsRoute); //operations on locations
+const user_favouritesRoutes = require('./userRoutes/favourites.js');
+app.use('/api/favourites', user_favouritesRoutes);
 
-const favouritesRoutes = require('./favourites.js'); // route for the favourites
-app.use('/api/favourites', favouritesRoutes); // everything that go to /favourites
+const user_accountRoutes = require('./userRoutes/account.js');
+app.use('/api/account', user_accountRoutes);
 
-const userRoutes = require('./users.js'); // route for the registration
-app.use('/api/users', userRoutes); // everything that go to /registration will go to registration.js
 
-const reportRoutes = require('./report.js'); //routes for the report
-// const { exists } = require("./models/userScheme.js");
-app.use('/api/reports', reportRoutes);
+//admin routes
+const admin_adminsRoutes = require('./adminRoutes/admins.js');
+app.use('/api/admin/admins', admin_adminsRoutes);
 
-// const adminRoutes = require('./admin/index.js'); //api for admins
-// app.use('/api/admin', adminRoutes);
+const admin_locationsRoute = require('./adminRoutes/locations.js');
+app.use('/api/admin/locations', admin_locationsRoute);
+
+const admin_favouritesRoutes = require('./adminRoutes/favourites.js');
+app.use('/api/admin/favourites', admin_favouritesRoutes);
+
+const admin_usersRoutes = require('./adminRoutes/users.js');
+app.use('/api/admin/users', admin_usersRoutes);
 
 
 // app.use(expressWinston.errorLogger({
@@ -99,13 +113,6 @@ app.use('/api/reports', reportRoutes);
 //         winston.format.json()
 //     )
 // }));
-
-
-/*
-const checkReports = require('./checkReports.js'); // route to go and check the reports
-app.use('/api/checkReports', checkReports);  // everything that go to /checkReports will go to checkReports.js
-*/
-
 
 
 /* Gestore 404 di default */
@@ -123,6 +130,5 @@ app.use((error, req, res, next) => {
         }
     });
 });
-
 
 module.exports = app;
